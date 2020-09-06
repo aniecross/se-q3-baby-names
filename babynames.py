@@ -35,6 +35,10 @@ import sys
 import re
 import argparse
 
+__author__ = """Anie Cross with help from instructor demo recordings,
+Group-B discussion topics, Google search, docs.python.org, stackoverflow.com,
+assessment completed with help from Tutor HPost"""
+
 
 def extract_names(filename):
     """
@@ -44,7 +48,21 @@ def extract_names(filename):
     ['2006', 'Aaliyah 91', 'Aaron 57', 'Abagail 895', ...]
     """
     names = []
-    # +++your code here+++
+    with open(filename, 'r') as f:
+        text = f.read()
+    year = re.search(r'Popularity\sin\s(\d\d\d\d)', text)
+    if year:
+        names.append(year.group(1))
+    tuples = re.findall(r'<td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>', text)
+    d = {}
+    for rank, boy, girl in tuples:
+        if boy not in d.keys():
+            d[boy] = rank
+        if girl not in d.keys():
+            d[girl] = rank
+    d = sorted(d.items())
+    for item in d:
+        names.append(item[0] + ' ' + item[1])
     return names
 
 
@@ -82,7 +100,14 @@ def main(args):
     # Use the create_summary flag to decide whether to print the list
     # or to write the list to a summary file (e.g. `baby1990.html.summary`).
 
-    # +++your code here+++
+    for filename in file_list:
+        file = filename + '.summary'
+        result = '\n'.join(extract_names(filename))
+        if create_summary:
+            f = open(file, 'a')
+            f.write(result)
+            f.close()
+        print(result)
 
 
 if __name__ == '__main__':
